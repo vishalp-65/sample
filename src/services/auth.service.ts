@@ -1,6 +1,3 @@
-import { UserService } from "./user.service"
-import { RefreshTokenRepository } from "../repositories/refreshToken.repository"
-import { PasswordResetTokenRepository } from "../repositories/passwordResetToken.repository"
 import { JwtUtil } from "../utils/jwt"
 import { AuthTokens } from "../types"
 import {
@@ -9,6 +6,9 @@ import {
     ValidationError
 } from "../utils/errors"
 import { logger } from "../config/logger"
+import { UserService } from "./user.service"
+import { RefreshTokenRepository } from "@/repositories/refreshToken.repository"
+import { PasswordResetTokenRepository } from "@/repositories/passwordResetToken.repository"
 
 export class AuthService {
     private userService: UserService
@@ -141,8 +141,8 @@ export class AuthService {
             await this.storeRefreshToken(
                 newTokens.refreshToken,
                 user.id,
-                storedToken.ipAddress,
-                storedToken.userAgent
+                storedToken.ipAddress ?? undefined,
+                storedToken.userAgent ?? undefined
             )
 
             logger.info(`Tokens refreshed for user: ${user.email}`)

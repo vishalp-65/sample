@@ -1,15 +1,15 @@
 import { Router } from "express"
-import { AuthController } from "../controllers/auth.controller"
-import { validate } from "../middleware/validation.middleware"
-import { authenticate } from "../middleware/auth.middleware"
-import { authRateLimit } from "../middleware/rateLimit.middleware"
 import {
-    signupSchema,
+    forgotPasswordSchema,
     loginSchema,
     refreshTokenSchema,
-    forgotPasswordSchema,
-    resetPasswordSchema
-} from "../validators/auth.validator"
+    resetPasswordSchema,
+    signupSchema
+} from "@/validators/auth.validate"
+import { AuthController } from "@/controllers/auth.controller"
+import { authRateLimit } from "@/middlewares/rateLimit.middleware"
+import { validate } from "@/middlewares/validation.middleware"
+import { authenticate } from "@/middlewares/auth.middleware"
 
 export class AuthRoutes {
     public router: Router

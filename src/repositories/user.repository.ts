@@ -1,8 +1,8 @@
 import { Repository } from "typeorm"
 import { AppDataSource } from "../config/database"
 import { User } from "../entities/User.entity"
-import { NotFoundError, ValidationError } from "@/utils/errors"
-import { PasswordUtil } from "@/utils/password"
+import { NotFoundError, ValidationError } from "../utils/errors"
+import { PasswordUtil } from "../utils/password"
 
 export class UserRepository {
     private repository: Repository<User>
@@ -21,11 +21,15 @@ export class UserRepository {
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        return this.userRepository.findByEmail(email)
+        return this.repository.findOne({ where: { email } })
+    }
+
+    async findAll(): Promise<User[]> {
+        return this.repository.find({ where: { isActive: true } })
     }
 
     async validateCredentials(email: string, password: string): Promise<User> {
-        const user = await this.userRepository.findByEmail(email)
+        const user = await this.findByEmail(email)
         if (!user) {
             throw new NotFoundError("User not found")
         }
@@ -46,7 +50,7 @@ export class UserRepository {
     }
 
     async updateLastLogin(id: string): Promise<void> {
-        await this.userRepository.updateLastLogin(id)
+        await this.repository.update(id, { lastLoginAt: new Date() })
     }
 
     async updatePassword(id: string, newPassword: string): Promise<void> {
@@ -57,15 +61,29 @@ export class UserRepository {
         }
 
         const hashedPassword = await PasswordUtil.hash(newPassword)
-        await this.userRepository.update(id, { password: hashedPassword })
+        await this.repository.update(id, { password: hashedPassword })
     }
 
     async deactivateUser(id: string): Promise<void> {
-        const user = await this.userRepository.findById(id)
+        const user = await this.findById(id)
         if (!user) {
             throw new NotFoundError("User not found")
         }
 
-        await this.userRepository.softDelete(id)
+        await this.repository.update(id, { isActive: false })
+    }
+
+    async updatePermissions(
+        userId: string,
+        permissions: string[]
+    ): Promise<User> {
+        await this.repository.update(userId, {
+            permissions: permissions.join(",")
+        })
+        const user = await this.findById(userId)
+        if (!user) {
+            throw new NotFoundError("User not found after update")
+        }
+        return user
     }
 }

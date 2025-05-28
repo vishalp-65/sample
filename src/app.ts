@@ -2,10 +2,10 @@ import express, { Application } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import { Routes } from "./routes"
-import { errorHandler, notFoundHandler } from "./middleware/error.middleware"
-import { generalRateLimit } from "./middleware/rateLimit.middleware"
 import { logger } from "./config/logger"
 import { config } from "./config/config"
+import { generalRateLimit } from "./middlewares/rateLimit.middleware"
+import { errorHandler, notFoundHandler } from "./middlewares/error.middleware"
 
 export class App {
     public app: Application

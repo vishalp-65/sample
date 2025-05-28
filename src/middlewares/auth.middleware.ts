@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { JwtUtil } from "../utils/jwt"
 import { AuthenticationError } from "../utils/errors"
-import { UserService } from "../services/user.service"
+import { UserService } from "@/services/user.service"
 
 export const authenticate = async (
     req: Request,
